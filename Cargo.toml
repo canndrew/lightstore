@@ -1,0 +1,21 @@
+[package]
+name = "qpqp"
+version = "0.1.0"
+authors = ["Andrew Cann <shum@canndrew.org>"]
+
+[dependencies]
+futures = "0.1"
+tokio-core = "*"
+tokio-io = "*"
+unwrap = "1.1"
+future-utils = "*"
+void = "1"
+futures-await = "*"
+byteorder = "1"
+bytes = "*"
+sha2 = "*"
+rand = "*"
+quick-error = "*"
+log = "*"
+env_logger = "*"
+
