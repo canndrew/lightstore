@@ -20,7 +20,7 @@ impl Msg {
             command_bytes
         };
         unwrap!(cursor.write(&command[..]));
-        unwrap!(cursor.write(&[0u8; 4][..]));
+        unwrap!(cursor.write(&[0u8; 8][..]));
         Msg { cursor }
     }
 
@@ -140,15 +140,12 @@ impl Msg {
                 return future::err(ReadMsgError::InvalidMagicNumber).into_boxed();
             }
             let header = cursor.into_inner();
-            println!("bytes: {:?}", header);
             let command = {
                 let mut command_end = 15;
                 while header[command_end] == 0 {
                     command_end -= 1;
                 }
-                println!("command_end == {}", command_end);
                 let command = &header[4..(command_end + 1)];
-                println!("command == {:?}", command);
                 try_fut!(
                     String::from_utf8(command.to_vec())
                     .map_err(ReadMsgError::InvalidCommand)
@@ -208,6 +205,45 @@ impl Msg {
         Ok(Rejection {
             message, code, reason, data,
         })
+    }
+
+    pub fn parse_version(&mut self) -> Result<(), ParseVersionError> {
+        if self.remaining() < 80 {
+            return Err(ParseVersionError::MessageTooShort);
+        }
+        let _version = unwrap!(self.read_u32::<LittleEndian>());
+        let _services = unwrap!(self.read_u64::<LittleEndian>());
+        let _timestamp = unwrap!(self.read_u64::<LittleEndian>());
+
+        let _our_services = unwrap!(self.read_u64::<LittleEndian>());
+        let mut our_ip = [0u8; 16];
+        unwrap!(self.read_exact(&mut our_ip));
+        let _our_ip = Ipv6Addr::from(our_ip);
+        let _our_port = unwrap!(self.read_u16::<BigEndian>());
+
+        let _their_services = unwrap!(self.read_u64::<LittleEndian>());
+        let mut their_ip = [0u8; 16];
+        unwrap!(self.read_exact(&mut their_ip));
+        let _their_ip = Ipv6Addr::from(their_ip);
+        let _their_port = unwrap!(self.read_u16::<BigEndian>());
+
+        let _nonce = unwrap!(self.read_u64::<BigEndian>());
+
+        let _user_agent = self.parse_var_str().map_err(ParseVersionError::ParseUserAgent)?;
+
+        if self.remaining() < 4 {
+            return Err(ParseVersionError::MessageTooShort);
+        }
+        let _start_height = unwrap!(self.read_u32::<LittleEndian>());
+
+        if self.remaining() > 0 {
+            let _relay = unwrap!(self.read_u8());
+            if self.remaining() > 0 {
+                return Err(ParseVersionError::MessageTooLong);
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -303,6 +339,23 @@ quick_error! {
     pub enum ParseVarIntError {
         MessageTooShort {
             description("message too short")
+        }
+    }
+}
+
+quick_error! {
+    #[derive(Debug)]
+    pub enum ParseVersionError {
+        MessageTooShort {
+            description("message too short")
+        }
+        MessageTooLong {
+            description("message too long")
+        }
+        ParseUserAgent(e: ParseVarStrError) {
+            description("error parsing user-agent field")
+            display("error parsing user-agent field: {}", e)
+            cause(e)
         }
     }
 }

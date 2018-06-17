@@ -17,6 +17,15 @@ extern crate quick_error;
 #[macro_use]
 extern crate log;
 extern crate env_logger;
+#[cfg_attr(test, macro_use)]
+extern crate net_literals;
+//#[macro_use]
+#[cfg_attr(test, macro_use)]
+extern crate hex_literal;
+extern crate secp256k1;
+//extern crate rand_0_3;
+extern crate hkdf;
+extern crate chacha20_poly1305_aead;
 
 macro_rules! try_fut(
     ($e:expr) => (
@@ -27,25 +36,19 @@ macro_rules! try_fut(
     )
 );
 
+macro_rules! slice_to_array(
+    ($slice:expr, $len:expr) => ({
+        let mut array: MaybeUninit<[u8; $len]> = MaybeUninit { uninit: () };
+        unsafe {
+            array.init.copy_from_slice(&$slice[..]);
+            array.init
+        }
+    })
+);
+
 mod priv_prelude;
-mod bitcoin;
+pub mod bitcoin;
+pub mod lightning;
 mod ext;
-
-use priv_prelude::*;
-use bitcoin::Peer;
-
-fn main() {
-    let _ = env_logger::init();
-
-    let mut core = unwrap!(Core::new());
-    let handle = core.handle();
-    let f = {
-        Peer::connect(&handle, "seed.btc.petertodd.org:8333")
-        .map_err(|e| panic!(e))
-        .map(|_peer| {
-            println!("connected!");
-        })
-    };
-    core.run(f).void_unwrap()
-}
+mod util;
 
