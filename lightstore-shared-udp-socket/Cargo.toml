@@ -1,0 +1,21 @@
+cargo-features = ["edition"]
+
+[package]
+name = "lightstore-shared-udp-socket"
+version = "0.1.0"
+authors = ["Andrew Cann <shum@canndrew.org>"]
+edition = "2018"
+
+[dependencies]
+failure = "0.1.2"
+unwrap = "1.2.1"
+futures = "0.1.23"
+tokio = "0.1.7"
+future-utils = "0.12.0"
+bytes = "0.4.9"
+void = "1.0.2"
+net-literals = "0.1.2"
+canndrews-misc-ext-traits = { git = "https://github.com/canndrew/canndrews-misc-ext-traits", rev = "1004f05bc0f2e8455e54da9e13c753882f852b58", features = ["futures", "bytes"] }
+
+lightstore-units = { path = "../lightstore-units" }
+
