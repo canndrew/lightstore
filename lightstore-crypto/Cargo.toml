@@ -1,0 +1,15 @@
+cargo-features = ["edition"]
+
+[package]
+name = "lightstore-crypto"
+version = "0.1.0"
+authors = ["Andrew Cann <shum@canndrew.org>"]
+edition = "2018"
+
+[dependencies]
+libsodium-sys = { git = "https://github.com/canndrew/libsodium-sys", rev = "c78bd5dda67181f695edd855be873db8a85e3e0c" }
+generic-array = "0.12.0"
+unwrap = "1.1"
+bytes = "0.4.9"
+failure = "0.1.2"
+
