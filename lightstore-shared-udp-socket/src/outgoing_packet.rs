@@ -1,11 +1,11 @@
 use super::*;
 
 pub struct OutgoingPacket {
-    data: Bytes,
-    dest: SocketAddr,
-    utility: Btc,
-    utility_decay: Sec,
-    utility_start: Instant,
+    pub data: Bytes,
+    pub dest: SocketAddr,
+    pub utility: Btc,
+    pub utility_decay: Sec,
+    pub utility_time: Instant,
 }
 
 impl OutgoingPacket {
@@ -20,12 +20,12 @@ impl OutgoingPacket {
             dest,
             utility,
             utility_decay,
-            utility_start: Instant::now(),
+            utility_time: Instant::now(),
         }
     }
 
     pub fn utility_decay_at(&self, at: Instant) -> BtcPerSec {
-        let time = Sec::from(at.duration_since(self.utility_start));
+        let time = Sec::from(at.duration_since(self.utility_time));
         self.utility * (-1.0 / self.utility_decay) * (- time / self.utility_decay).exp()
     }
 
