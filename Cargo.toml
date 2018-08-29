@@ -1,29 +1,9 @@
-cargo-features = ["rename-dependency"]
-
-[package]
-name = "qpqp"
-version = "0.1.0"
-authors = ["Andrew Cann <shum@canndrew.org>"]
-
-[dependencies]
-futures = "0.1"
-tokio-core = "*"
-tokio-io = "*"
-unwrap = "1.1"
-future-utils = "*"
-void = "1"
-futures-await = "*"
-byteorder = "1"
-bytes = "*"
-sha2 = "*"
-rand = "0.3"
-#rand_0_3 = { package = "rand", version = "0.3" }
-quick-error = "*"
-log = "*"
-env_logger = "*"
-net-literals = "*"
-hex-literal = "*"
-secp256k1 = { version = "*", features = ["rand"]}
-hkdf = "*"
-chacha20-poly1305-aead = "*"
+[workspace]
+members = [
+    "lightstore-units",
+    "lightstore-shared-udp-socket",
+    "lightstore-crypto",
+    "lightstore",
+    "lightning",
+]
 
