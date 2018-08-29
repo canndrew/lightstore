@@ -1,0 +1,6 @@
+[package]
+name = "lightstore-units"
+version = "0.1.0"
+authors = ["Andrew Cann <shum@canndrew.org>"]
+
+[dependencies]
